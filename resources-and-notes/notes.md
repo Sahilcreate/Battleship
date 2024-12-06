@@ -13,3 +13,11 @@
     hitStatus: true or false,
 }
 ```
+
+## 2024-12-06
+
+- added `Player` logic for both computer and user
+- wrote pseudo-code for gameflow to give me a better direction
+- configured webpack to use css, png, svg, fonts, etc. and set a template Html file for gitHub pages
+- wrote some more tests for gameboard and player
+- when i was writing `areAllShipsSunk()`, at first I thought of traversing the 2D array and check if `(cell.occupied !== null && cell.hitStatus === true) || cell.occupied === null` return true. If it did, that means all ships were sunk and game should end. But then i thought that i have to check this condition for every `receiveAttack` call, which although works but wasn't in no way efficient. Another method was to use pre-established `isSunk()` function of `instanceOf Ship()` class. whenever a valid ship is placed in `placeTheShip()`, i push it in `shipsArr` property of `instanceOf Gameboard()` and traversing this array, check if every ship `isSunk()` or not.
