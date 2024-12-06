@@ -108,3 +108,40 @@ test("attack hit", () => {
   expect(carrier.hitCounter).toBe(5);
   expect(carrier.isSunk()).toBeTruthy;
 });
+
+test("all ships sunk", () => {
+  const gameboard = new Gameboard();
+  const carrier = new Ship("Carrier", 5);
+  const destroyer = new Ship("Destroyer", 2);
+
+  gameboard.placeTheShip([0, 0], "X", carrier);
+  gameboard.placeTheShip([3, 4], "Y", destroyer);
+
+  gameboard.receiveAttack([0, 0]);
+  gameboard.receiveAttack([0, 1]);
+  gameboard.receiveAttack([0, 2]);
+  gameboard.receiveAttack([0, 3]);
+  gameboard.receiveAttack([0, 4]);
+
+  gameboard.receiveAttack([3, 4]);
+  gameboard.receiveAttack([4, 4]);
+
+  expect(gameboard.areAllShipsSunk()).toBeTruthy();
+});
+
+test("all ships not sunk", () => {
+  const gameboard = new Gameboard();
+  const carrier = new Ship("Carrier", 5);
+  const destroyer = new Ship("Destroyer", 2);
+
+  gameboard.placeTheShip([0, 0], "X", carrier);
+  gameboard.placeTheShip([3, 4], "Y", destroyer);
+
+  gameboard.receiveAttack([0, 0]);
+  gameboard.receiveAttack([0, 1]);
+  gameboard.receiveAttack([0, 2]);
+  gameboard.receiveAttack([0, 3]);
+  gameboard.receiveAttack([0, 4]);
+
+  expect(gameboard.areAllShipsSunk()).not.toBeTruthy();
+});
