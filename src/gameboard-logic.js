@@ -1,3 +1,4 @@
+//return a 10x10 2D array with each cell as an object
 function generateBoard() {
   let arr = [];
   for (let i = 0; i <= 9; i++) {
@@ -9,10 +10,12 @@ function generateBoard() {
   return arr;
 }
 
+//check if a ship can be placed at desired coordinates
 function canPlaceShip(board, coordinate, orientation, shipLength) {
   const [coordinate_x, coordinate_y] = coordinate;
   const board_size = board.length;
 
+  //check if cell is valid for ship placement
   function isCellValid(x, y) {
     return (
       x >= 0 &&
@@ -23,6 +26,8 @@ function canPlaceShip(board, coordinate, orientation, shipLength) {
     );
   }
 
+  //condition for both orientation - "X" & "Y"
+  //check for each cell required for ship placement
   if (orientation == "X") {
     for (let i = 0; i < shipLength; i++) {
       if (!isCellValid(coordinate_x, coordinate_y + i)) {
