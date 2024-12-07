@@ -4,7 +4,11 @@ function generateBoard() {
   for (let i = 0; i <= 9; i++) {
     arr[i] = [];
     for (let j = 0; j <= 9; j++) {
-      arr[i][j] = { occupied: null, hitStatus: false };
+      arr[i][j] = {
+        occupied: null,
+        hitStatus: false,
+        coordinate: `[${i}, ${j}]`,
+      };
     }
   }
   return arr;
