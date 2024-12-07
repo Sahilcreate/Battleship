@@ -12,7 +12,8 @@ export default class Gameboard {
   placeTheShip(coordinate, orientation, ship) {
     //determines if ship can be placed on desired coordinates
     if (!canPlaceShip(this.board, coordinate, orientation, ship.length)) {
-      throw new Error("Ship can't be placed here!");
+      // throw new Error("Ship can't be placed here!");
+      return;
     }
 
     const [coordinate_x, coordinate_y] = coordinate;
@@ -28,6 +29,32 @@ export default class Gameboard {
     }
   }
 
+  placeShipsRandomly() {
+    const carrier = new Ship("Carrier", 5);
+    const battleShip = new Ship("BattleShip", 4);
+    const cruiser = new Ship("Cruiser", 3);
+    const submarine = new Ship("Submariner", 3);
+    const destroyer = new Ship("Destroyer", 2);
+
+    const shipsNotPlaced = [carrier, battleShip, cruiser, submarine, destroyer];
+
+    while (shipsNotPlaced.length > 0) {
+      const x = Math.floor(Math.random() * 10);
+      const y = Math.floor(Math.random() * 10);
+      const orientationArr = ["X", "Y"];
+      const orientationNum = Math.floor(Math.random() * orientationArr.length);
+      this.placeTheShip(
+        [x, y],
+        orientationArr[orientationNum],
+        shipsNotPlaced[0]
+      );
+
+      if (this.shipsArr.includes(shipsNotPlaced[0])) {
+        shipsNotPlaced.shift();
+      }
+    }
+  }
+
   //Receives a par of coordinates,
   //determines if a ship is hit or shot is miss
   //and update cell accordingly
@@ -38,14 +65,15 @@ export default class Gameboard {
 
     if (cell.occupied === null && cell.hitStatus === false) {
       cell.hitStatus = true;
-      return "Miss!";
+      // return "Miss!";
     } else if (cell.occupied != null && cell.hitStatus === false) {
       cell.occupied.hit();
       cell.hitStatus = true;
-      return "Hit!";
-    } else {
-      return "Cell already attacked!";
+      // return "Hit!";
     }
+    // else {
+    //   return "Cell already attacked!";
+    // }
   }
 
   //Check if all the ships are Sunk or not.
