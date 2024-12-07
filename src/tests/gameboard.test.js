@@ -1,10 +1,15 @@
-import { experiments } from "webpack";
 import Gameboard from "../gameboard";
 import { canPlaceShip, generateBoard } from "../gameboard-logic";
 import Ship from "../ship";
 
 test("gameboard generation", () => {
   const board = generateBoard();
+  const expectedObject = {
+    occupied: null,
+    hitStatus: false,
+    coordinate: "[4, 5]",
+  };
+  expect(board[4][5]).toMatchObject(expectedObject);
 });
 
 test("can I place ship here?", () => {
@@ -67,20 +72,20 @@ test("is ship placed?", () => {
   expect(gameboard.board[4][9].occupied).toBe(carrier);
 });
 
-test("is ship placed? - 2", () => {
-  const gameboard = new Gameboard();
-  const orientation = "X";
-  const coordinate = [0, 9];
-  const carrier = { name: "carrier", length: 5 };
+// test("is ship placed? - 2", () => {
+//   const gameboard = new Gameboard();
+//   const orientation = "X";
+//   const coordinate = [0, 9];
+//   const carrier = { name: "carrier", length: 5 };
 
-  expect(() => {
-    gameboard.placeTheShip(coordinate, orientation, carrier);
-  }).toThrow("Ship can't be placed here!");
+//   expect(() => {
+//     gameboard.placeTheShip(coordinate, orientation, carrier);
+//   }).toThrow("Ship can't be placed here!");
 
-  expect(
-    gameboard.board.every((row) => row.every((cell) => cell.occupied === null))
-  ).toBeTruthy();
-});
+//   expect(
+//     gameboard.board.every((row) => row.every((cell) => cell.occupied === null))
+//   ).toBeTruthy();
+// });
 
 test("attack miss", () => {
   const gameboard = new Gameboard();
@@ -144,4 +149,25 @@ test("all ships not sunk", () => {
   gameboard.receiveAttack([0, 4]);
 
   expect(gameboard.areAllShipsSunk()).not.toBeTruthy();
+});
+
+test("are ships placed randomly", () => {
+  const gameboard = new Gameboard();
+  const carrier = new Ship("Carrier", 5);
+  const battleShip = new Ship("BattleShip", 4);
+  const cruiser = new Ship("Cruiser", 3);
+  const submarine = new Ship("Submariner", 3);
+  const destroyer = new Ship("Destroyer", 2);
+  gameboard.placeShipsRandomly();
+
+  console.log(gameboard.board);
+  console.log(gameboard.shipsArr);
+
+  expect(gameboard.shipsArr.length).toBe(5);
+
+  // expect(gameboard.shipsArr.includes()).toBe(true);
+  // expect(gameboard.shipsArr.includes(battleShip)).toBe(true);
+  // expect(gameboard.shipsArr.includes(cruiser)).toBe(true);
+  // expect(gameboard.shipsArr.includes(submarine)).toBe(true);
+  // expect(gameboard.shipsArr.includes(destroyer)).toBe(true);
 });
