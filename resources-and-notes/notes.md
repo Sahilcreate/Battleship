@@ -25,3 +25,9 @@
 ## 2024-12-07
 
 Didn't add much today. Just finalized the design and tried working on it. Ran into some problem of adding event listener, like should i `data-coord` as an attribute for each `cellDiv` or this can be done by passing `Player` as a whole to function.
+
+## 2024-12-08
+
+I though it will be complete today but i wasn't able to figure out the rotation of orientation during drag and drop pre-screen. One idea is to have a slider which choose the "X" or "Y" orientation of ships only. Other idea is to show both orientation and step through them one by one.
+
+But i am too tired to work more so guess i am done for today.
