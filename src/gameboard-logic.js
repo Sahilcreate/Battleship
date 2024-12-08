@@ -7,7 +7,7 @@ function generateBoard() {
       arr[i][j] = {
         occupied: null,
         hitStatus: false,
-        coordinate: `[${i}, ${j}]`,
+        coordinate: [i, j],
       };
     }
   }
