@@ -18,9 +18,9 @@ export default class Player {
   }
 
   attackEnemy(enemy, coordinate = null) {
-    if (this.name === "Computer") {
+    if (this.name === "computer") {
       coordinate = this.getRandomCoordinate();
     }
-    return enemy.playerBoard.receiveAttack(coordinate);
+    enemy.playerBoard.receiveAttack(coordinate);
   }
 }
