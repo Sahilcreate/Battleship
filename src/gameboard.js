@@ -13,7 +13,7 @@ export default class Gameboard {
     //determines if ship can be placed on desired coordinates
     if (!canPlaceShip(this.board, coordinate, orientation, ship.length)) {
       // throw new Error("Ship can't be placed here!");
-      return;
+      return 0;
     }
 
     const [coordinate_x, coordinate_y] = coordinate;
@@ -27,6 +27,8 @@ export default class Gameboard {
         this.board[coordinate_x + i][coordinate_y].occupied = ship;
       }
     }
+
+    return 1;
   }
 
   placeShipsRandomly() {
