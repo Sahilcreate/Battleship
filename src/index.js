@@ -1,4 +1,4 @@
-import gameStart from "./game";
+import preGameScreen from "./view";
 import "./style.css";
 
-gameStart();
+preGameScreen();
