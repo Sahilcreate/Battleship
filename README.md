@@ -2,7 +2,7 @@
 
 ## Result
 
-[Click to try game live]()
+[Click to try game live](https://sahilcreate.github.io/Battleship/)
 
 ![Game Preview](./resources-and-notes/preview.png)
 
