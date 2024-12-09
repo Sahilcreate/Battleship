@@ -1,57 +1,34 @@
 import Player from "./player";
 import Ship from "./ship";
+import {
+  globalDragStorage,
+  rotateOrientation,
+  createDragContainer,
+  disableClicks,
+  addDragOverEvent,
+  createCell,
+  renderCell,
+  deleteChildren,
+} from "./view-util";
+
+let currentPlayer = "player";
+let player = new Player("player");
+let computer = new Player("computer");
 
 const playerContainer = document.querySelector(".player-container");
 const computerContainer = document.querySelector(".computer-container");
 const infoContainer = document.querySelector(".info");
 const info = document.querySelector(".battle-info");
 
-const globalDragStorage = {
-  strg: {},
-  selectedShip: null,
-  get dragData() {
-    return this.strg;
-  },
-  set dragData(object) {
-    this.strg = object;
-  },
-
-  get ship() {
-    return this.selectedShip;
-  },
-  set ship(shipContainer) {
-    this.selectedShip = shipContainer;
-  },
-};
-
+// Checks if key "R" is pressed to rotate draggable ships
 document.addEventListener("keydown", (event) => {
   if (event.key === "R" || event.key === "r") {
     rotateOrientation();
   }
 });
 
-function rotateOrientation() {
-  const draggingShip = globalDragStorage.ship;
-
-  if (draggingShip == null) return;
-
-  const currentOrientation = draggingShip.getAttribute("data-orien");
-
-  const newOrientation = currentOrientation === "Y" ? "X" : "Y";
-
-  draggingShip.setAttribute("data-orien", newOrientation);
-
-  if (newOrientation === "X") {
-    draggingShip.style.transform = "rotate(0deg)";
-  } else {
-    draggingShip.style.transform = "rotate(90deg)";
-  }
-}
-
-let currentPlayer = "player";
-let player = new Player("player");
-let computer = new Player("computer");
-
+// Load Screen before game Start to let player drap their ships
+// to their water
 export default function preGameScreen() {
   const preGameContainer = document.createElement("div");
   preGameContainer.className = "pre-game-container";
@@ -64,81 +41,10 @@ export default function preGameScreen() {
   preGameContainer.appendChild(randomGeneratorBtn);
   infoContainer.appendChild(preGameContainer);
 
-  info.textContent = "DRAG SHIP TO YOUR WATERS";
+  info.textContent = "DRAG SHIP TO YOUR WATERS. PRESS 'R' TO ROTATE.";
 }
 
-function createDragContainer() {
-  const dragContainer = document.createElement("div");
-  dragContainer.className = "drag-ships-container";
-
-  const carrierContainer = document.createElement("div");
-  carrierContainer.className = "carrier-container";
-  carrierContainer.setAttribute("data-orien", "Y");
-  carrierContainer.draggable = true;
-
-  const battleShipContainer = document.createElement("div");
-  battleShipContainer.className = "battleShip-container";
-  battleShipContainer.setAttribute("data-orien", "Y");
-  battleShipContainer.draggable = true;
-
-  const cruiserContainer = document.createElement("div");
-  cruiserContainer.className = "cruiser-container";
-  cruiserContainer.setAttribute("data-orien", "Y");
-  cruiserContainer.draggable = true;
-
-  const submarineContainer = document.createElement("div");
-  submarineContainer.className = "submarine-container";
-  submarineContainer.setAttribute("data-orien", "Y");
-  submarineContainer.draggable = true;
-
-  const destroyerContainer = document.createElement("div");
-  destroyerContainer.className = "destroyer-container";
-  destroyerContainer.setAttribute("data-orien", "Y");
-  destroyerContainer.draggable = true;
-
-  createShipCells(carrierContainer, 5);
-  createShipCells(battleShipContainer, 4);
-  createShipCells(cruiserContainer, 3);
-  createShipCells(submarineContainer, 3);
-  createShipCells(destroyerContainer, 2);
-
-  addDragStartEvent(carrierContainer, "carrier");
-  addDragStartEvent(battleShipContainer, "battleShip");
-  addDragStartEvent(cruiserContainer, "cruiser");
-  addDragStartEvent(submarineContainer, "submarine");
-  addDragStartEvent(destroyerContainer, "destroyer");
-
-  dragContainer.appendChild(carrierContainer);
-  dragContainer.appendChild(battleShipContainer);
-  dragContainer.appendChild(cruiserContainer);
-  dragContainer.appendChild(submarineContainer);
-  dragContainer.appendChild(destroyerContainer);
-
-  return dragContainer;
-}
-
-function addDragStartEvent(container, name) {
-  container.addEventListener("dragstart", (event) => {
-    const parent = event.target;
-    const tempObj = {
-      nm: name,
-      lngth: parent.childElementCount,
-      orien: parent.getAttribute("data-orien"),
-    };
-
-    globalDragStorage.dragData = tempObj;
-    globalDragStorage.ship = parent;
-  });
-}
-
-function createShipCells(container, length) {
-  for (let i = 0; i < length; i++) {
-    const shipCell = document.createElement("div");
-    shipCell.className = "drag-ship-cell";
-    container.appendChild(shipCell);
-  }
-}
-
+// Button to place ships randomly and start the game
 function createRandomGeneratorBtn() {
   const btn = document.createElement("button");
   btn.className = "random-gen-btn";
@@ -155,16 +61,18 @@ function createRandomGeneratorBtn() {
   return btn;
 }
 
+// Start the game once
 function gameStart() {
   const preGameContainer = document.querySelector(".pre-game-container");
   preGameContainer.remove();
-  // player.playerBoard.placeShipsRandomly();
+
   computer.playerBoard.placeShipsRandomly();
 
   renderTurnBoards();
   showInfoText();
 }
 
+// Handle change info text after each turn
 function showInfoText() {
   if (currentPlayer === "player") {
     info.textContent = "YOUR TURN";
@@ -173,6 +81,7 @@ function showInfoText() {
   }
 }
 
+// Change turn after each move with help of global variable
 function changeTurn() {
   if (isGameOver()) return;
 
@@ -188,6 +97,8 @@ function changeTurn() {
   }
 }
 
+// Check if all ships in any board are sunk
+// and end the game if yes
 function isGameOver() {
   if (player.playerBoard.areAllShipsSunk()) {
     info.textContent = "OOPS! YOU LOST.";
@@ -204,12 +115,13 @@ function isGameOver() {
   return false;
 }
 
-function disableClicks() {
-  const computerCells = document.querySelectorAll(".computer-cell");
-  computerCells.forEach((cell) => cell.replaceWith(cell.cloneNode(true)));
-}
-
+// render board before game start to show
+// how ships are being placed
 function renderPreGameBoard() {
+  if (player.playerBoard.shipsArr.length === 5) {
+    gameStart();
+    return;
+  }
   const playerArray = player.playerBoard.board;
   const computerArray = computer.playerBoard.board;
 
@@ -239,12 +151,8 @@ function renderPreGameBoard() {
   );
 }
 
-function addDragOverEvent(cellDiv) {
-  cellDiv.addEventListener("dragover", (event) => {
-    event.preventDefault();
-  });
-}
-
+// add an event in each cell of player board
+// which allow player to drop their draggable ships
 function addDropEvent(cellDiv) {
   cellDiv.addEventListener("drop", (event) => {
     event.preventDefault();
@@ -289,9 +197,9 @@ function addDropEvent(cellDiv) {
       );
     }
 
-    // const dragContainer = document.querySelector(".drag-ships-container");
-    // const drag = dragContainer.childElementCount;
-
+    // check if ship is placed in the board
+    // if yes then delete that ship from
+    // draggable ships
     if (isShipPlaced === 0) {
       return;
     } else if (isShipPlaced === 1) {
@@ -299,15 +207,15 @@ function addDropEvent(cellDiv) {
       shipDragged.remove();
       renderPreGameBoard();
     }
-
-    globalDragStorage.ship = null;
   });
 }
 
+// after game starts, render board after each turn
 function renderTurnBoards() {
   const playerArray = player.playerBoard.board;
   const computerArray = computer.playerBoard.board;
 
+  // clear both boards
   deleteChildren(playerContainer);
   deleteChildren(computerContainer);
 
@@ -330,19 +238,8 @@ function renderTurnBoards() {
   );
 }
 
-function createCell(cell, user) {
-  const cellDiv = document.createElement("div");
-  cellDiv.setAttribute("data-coord", `[${cell.coordinate}]`);
-
-  if (user === "computer") {
-    cellDiv.className = "computer-cell";
-    return cellDiv;
-  } else if (user === "player") {
-    cellDiv.className = "player-cell";
-    return cellDiv;
-  }
-}
-
+// add event that allows player to click on computer
+// board cell and attack
 function addComputerCellEvent(cellDiv, cell) {
   cellDiv.classList.add("clickable");
   cellDiv.addEventListener("click", () => {
@@ -350,6 +247,8 @@ function addComputerCellEvent(cellDiv, cell) {
   });
 }
 
+// actually handles attacking of both player
+// and cell. Calls change turn after each attack
 function playTurn(cell = null) {
   if (currentPlayer === "player") {
     player.attackEnemy(computer, cell.coordinate);
@@ -357,40 +256,5 @@ function playTurn(cell = null) {
   } else if (currentPlayer === "computer") {
     computer.attackEnemy(player);
     changeTurn();
-  }
-}
-
-function renderCell(cell, cellDiv, user) {
-  if (user === "player") {
-    if (cell.occupied !== null && cell.hitStatus === false) {
-      cellDiv.classList.add("player-ship");
-    } else if (cell.occupied !== null && cell.occupied.isSunk()) {
-      cellDiv.classList.add("player-ship-sunk");
-      cellDiv.textContent = "☠︎︎";
-    } else if (cell.occupied !== null && cell.hitStatus === true) {
-      cellDiv.classList.add("player-ship-hit");
-      cellDiv.textContent = "🔥";
-    } else if (cell.occupied === null && cell.hitStatus === true) {
-      cellDiv.classList.add("player-miss-hit");
-      cellDiv.textContent = "〰️";
-    }
-  }
-  if (user === "computer") {
-    if (cell.occupied !== null && cell.occupied.isSunk()) {
-      cellDiv.classList.add("computer-ship-sunk");
-      cellDiv.textContent = "☠︎︎";
-    } else if (cell.occupied !== null && cell.hitStatus === true) {
-      cellDiv.classList.add("computer-ship-hit");
-      cellDiv.textContent = "🔥";
-    } else if (cell.occupied === null && cell.hitStatus === true) {
-      cellDiv.classList.add("computer-miss-hit");
-      cellDiv.textContent = "〰️";
-    }
-  }
-}
-
-function deleteChildren(container) {
-  while (container.firstChild) {
-    container.removeChild(container.firstChild);
   }
 }
