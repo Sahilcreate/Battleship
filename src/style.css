@@ -172,6 +172,7 @@ main {
   align-items: center;
   grid-row: 2 / 3;
   grid-column: 1 / 3;
+
   font-size: 1.2rem;
 }
 
@@ -181,7 +182,7 @@ main {
   align-items: center;
 
   background-color: var(--focusColor);
-  width: 500px;
+  width: 700px;
   padding: 10px 0;
   border-radius: 4px;
 }
@@ -208,14 +209,13 @@ main {
   background-color: var(--focusColor);
   height: 35px;
   width: 35px;
-  border-radius: 2px;
+
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 1px solid var(--focusColor);
 
-  /* box-shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px, 
-              rgba(9, 30, 66, 0.13) 0px 0px 1px 1px; */
+  border-radius: 2px;
+  border: 1px solid var(--focusColor);
 }
 
 .player-ship,
@@ -236,41 +236,32 @@ main {
 
 .drag-ships-container {
   display: flex;
-  gap: 40px;
+  gap: 20px;
 
   padding: 40px 0;
 }
 
-.carrier-container {
+/* Draggable ships container */
+[data-direction="X"] {
+  flex-direction: column;
+}
+
+
+/* Draggable ships orientation */
+[data-orien="Y"] {
   display: flex;
   flex-direction: column;
   gap: 5px;
 }
 
-.battleShip-container {
+[data-orien="X"] {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 5px;
 }
 
-.cruiser-container {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
 
-.submarine-container {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.destroyer-container {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
+/* Individual ship cell of draggable ship */
 .drag-ship-cell {
   background-color: var(--focusColor);
   border: 1px solid black;
@@ -285,10 +276,11 @@ main {
   font-size: 20px;
   font-style: normal;
   letter-spacing: 2px;
+
   margin: 0;
   padding: 10px 20px;
-  border: none;
   background-color: var(--focusColor);
+
   border: 1px solid var(--focusColor);
   border-radius: 4px;
 }
